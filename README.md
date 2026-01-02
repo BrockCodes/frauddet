@@ -1,10 +1,3 @@
-Great — the Markdown you provided is already in a GitHub-ready format. To make sure it renders cleanly and works well as a project README on GitHub, here are a few recommendations and final checks you should perform before committing it.
-
-Below is a refined, GitHub-optimized version of your README section — properly structured, consistent in heading hierarchy, and formatted for repository presentation.
-
-You can paste this directly into README.md.
-
-
 # Leonard Governmental Investigative Toolkit (`frauddet`)
 
 > **Purpose:** Screening, triage, and investigative support for regulators, oversight bodies, and public-interest investigations.  
