@@ -4,8 +4,6 @@ Below is a refined, GitHub-optimized version of your README section — properly
 
 You can paste this directly into README.md.
 
-⸻
-
 
 # Leonard Governmental Investigative Toolkit (`frauddet`)
 
@@ -13,17 +11,13 @@ You can paste this directly into README.md.
 > **License:** Custom — **Leonard Governmental Investigative Software License v1.0**  
 > **Default scope:** `.gov` and public-sector use only. Commercial use allowed **only** under royalty terms and/or explicit written permission (see [License](#license)).
 
----
-
-## 📌 Repository Status Notice
+## Repository Status Notice
 
 This repository contains source-available investigative tooling.  
 It is **not open-source software** and may not be relicensed under MIT, GPL, Apache, or similar licenses.
 
 Use of this software is legally restricted.  
 See the **License** section before running, modifying, or redistributing any part of this project.
-
----
 
 ## Table of Contents
 
@@ -51,8 +45,6 @@ See the **License** section before running, modifying, or redistributing any par
 22. [License](#license)  
 23. [Contact](#contact)
 
----
-
 ## Overview
 
 This repository contains an investigative and fraud-screening toolkit authored by **Garrett Leonard**. It is designed for environments where investigative, regulatory, or oversight work intersects with:
@@ -78,8 +70,6 @@ Output formats include:
 - MongoDB collections tagged with run metadata for traceability
 
 > This toolkit produces **investigative screening signals only** — not legal findings or accusations. Human verification is required.
-
----
 
 ## Core Capabilities
 
@@ -109,13 +99,10 @@ Output formats include:
 - Domain-agnostic core architecture
 - License prohibits abusive, discriminatory, or retaliatory use
 
----
-
 ## Data Model: Provider Records
 
 A simplified `Provider` model:
 
-```python
 @dataclass
 class Provider:
     id: str
@@ -136,8 +123,6 @@ Fields commonly treated as sensitive:
 	•	Coordinates
 
 These may be automatically redacted depending on configuration.
-
-⸻
 
 Signals and Investigative Heuristics
 
@@ -170,8 +155,6 @@ Housing
 
 Flags are used to prioritize human review — not to conclude wrongdoing.
 
-⸻
-
 PII Handling & Redaction
 
 This toolkit supports three standard export profiles:
@@ -191,8 +174,6 @@ PII redaction applies to:
 
 Redacted values are replaced with explicit placeholders.
 
-⸻
-
 Installation
 
 Requirements:
@@ -207,9 +188,6 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
-
-
-⸻
 
 MongoDB Persistence
 
@@ -227,8 +205,6 @@ This enables:
 	•	historical comparison
 	•	investigative repeatability
 
-⸻
-
 JSON / CSV Output
 
 Exports are suitable for:
@@ -238,8 +214,6 @@ Exports are suitable for:
 	•	cross-agency reporting
 
 Redaction state is preserved in output metadata.
-
-⸻
 
 Multi-Industry Use & Limitations
 
@@ -252,8 +226,6 @@ Outputs require:
 	•	contextual analysis
 	•	corroborating evidence
 	•	professional judgment
-
-⸻
 
 Security, Ethics & Responsible Use
 
@@ -274,8 +246,6 @@ This toolkit is explicitly designed to support:
 	•	consumer protection
 	•	regulatory accountability
 	•	public integrity workflows
-
-⸻
 
 License
 
@@ -298,8 +268,6 @@ Key terms include:
 
 The full license text is provided in LICENSE.
 
-⸻
-
 Contact
 
 For:
@@ -320,8 +288,6 @@ If you fork or adapt this project, you must preserve:
 	•	royalty conditions
 	•	.gov usage limitation
 
----
-
 ## Next steps I recommend
 
 If you're posting to GitHub:
@@ -338,19 +304,6 @@ LICENSE
 
 3) Commit and push:
 
-```bash
 git add README.md LICENSE
 git commit -m "Add project README and license"
 git push
-
-
-⸻
-
-If you want, I can also:
-	•	generate a CONTRIBUTING.md
-	•	add SECURITY.md for disclosures
-	•	create issue templates
-	•	prepare a GitHub project description blurb
-	•	generate .github policy files
-
-Just tell me 👍
