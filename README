@@ -1,10 +1,27 @@
-Here is an expanded README you can drop in as README.md. It keeps everything you already have, but greatly deepens detail, adds examples, and spells out operational patterns and edge cases.
+Great — the Markdown you provided is already in a GitHub-ready format. To make sure it renders cleanly and works well as a project README on GitHub, here are a few recommendations and final checks you should perform before committing it.
+
+Below is a refined, GitHub-optimized version of your README section — properly structured, consistent in heading hierarchy, and formatted for repository presentation.
+
+You can paste this directly into README.md.
+
+⸻
+
 
 # Leonard Governmental Investigative Toolkit (`frauddet`)
 
 > **Purpose:** Screening, triage, and investigative support for regulators, oversight bodies, and public-interest investigations.  
-> **License:** Custom – **Leonard Governmental Investigative Software License v1.0**  
+> **License:** Custom — **Leonard Governmental Investigative Software License v1.0**  
 > **Default scope:** `.gov` and public-sector use only. Commercial use allowed **only** under royalty terms and/or explicit written permission (see [License](#license)).
+
+---
+
+## 📌 Repository Status Notice
+
+This repository contains source-available investigative tooling.  
+It is **not open-source software** and may not be relicensed under MIT, GPL, Apache, or similar licenses.
+
+Use of this software is legally restricted.  
+See the **License** section before running, modifying, or redistributing any part of this project.
 
 ---
 
@@ -38,143 +55,67 @@ Here is an expanded README you can drop in as README.md. It keeps everything you
 
 ## Overview
 
-This repository contains an investigative and fraud-screening toolkit authored by **Garrett Leonard**. It is designed to operate in environments where investigative, regulatory, or oversight work intersects with:
+This repository contains an investigative and fraud-screening toolkit authored by **Garrett Leonard**. It is designed for environments where investigative, regulatory, or oversight work intersects with:
 
 - Childcare licensing and oversight  
-- Healthcare facilities and ancillary providers  
-- Housing, shelters, or community service providers  
-- Educational institutions, private academies, and related entities  
-- Nonprofit organizations receiving public funds  
-- Vendors, contractors, and service providers to public agencies  
+- Healthcare & behavioral health providers  
+- Housing, shelters, & transitional facilities  
+- Education and private academy programs  
+- Nonprofits receiving public funds  
+- Contractors and third-party service providers to government agencies  
 
-At its core, the toolkit ingests provider-style records (e.g., businesses, facilities, service providers), normalizes and enriches them, and applies investigative heuristics to surface patterns that may warrant human review, such as:
+The system ingests provider-style organizational records, normalizes them, enriches them, and applies investigative heuristics to surface entities that may warrant human review, including:
 
 - Shared addresses across unrelated entities  
-- Thin or suspicious web presence  
-- Inconsistent or missing identifiers  
-- Signals suggesting shell entities or repeat actors  
+- Thin or suspicious online presence  
+- Reused or missing identifiers  
+- Patterns suggesting shell entities or repeat serial actors  
 
-The system outputs:
+Output formats include:
 
-- JSON suitable for downstream analytics and dashboards  
-- Optional CSV files for investigators, auditors, and inspectors  
-- MongoDB collections tagged with run metadata for auditability
+- JSON for investigative workflows & analytic dashboards  
+- Optional CSV exports for auditors & inspectors  
+- MongoDB collections tagged with run metadata for traceability
 
-> This is **not** a generic open-source fraud library. It ships under a **custom, restrictive license** geared toward public-sector and controlled commercial use. Read the [License](#license) carefully before using this project.
+> This toolkit produces **investigative screening signals only** — not legal findings or accusations. Human verification is required.
 
 ---
 
 ## Core Capabilities
 
-### 1. Provider Normalization
+### Provider normalization
+- Converts raw CSV / JSON / API input into a unified `Provider` model
+- Handles missing or inconsistent field structures
+- Provides a common cross-system comparison schema
 
-- Converts raw, messy input (CSV, JSON, API responses) into a consistent `Provider` model.
-- Handles missing fields, differing formats, and heterogeneous upstream sources.
-- Establishes a common schema for cross-source comparisons.
+### Investigative rules & heuristic scoring
+- Centralized `signals` dictionary for diagnostic indicators
+- Rules are intentionally explainable & auditable
+- Outputs can be justified in regulatory or evidentiary contexts
 
-### 2. Investigative Signals & Rules
+### PII-aware serialization
+- Supports **full internal records** and **redacted export profiles**
+- Prevents accidental exposure of sensitive identifiers
 
-- Central “signals” dictionary for flags and metadata:
-  - Example: `shared_address_count`, `google_place_id`, external ID matches.
-- Pluggable rule and heuristic layer:
-  - Written in plain Python to keep logic auditable and explainable.
-- Designed so outputs can be explained to auditors, judges, or review boards:
-  - “Flag X was raised because Y and Z conditions were true.”
+### MongoDB persistence & run metadata
+- Batch writes with configurable write modes
+- Each run is tagged and reconstructable for audit review
 
-### 3. PII-Aware Serialization
+### Dry-run & safe evaluation mode
+- Enables training, sandboxing, and test pipelines
+- Produces logs without persisting records
 
-- `serialize_provider(provider, redact=REDACT_PII)` ensures consistent PII handling.
-- Allows:
-  - Full internal investigative storage.
-  - Redacted external exports with clear “REDACTED_*” placeholders.
-
-### 4. MongoDB Persistence & Run Metadata
-
-- Batch writes with configurable modes (insert / replace / upsert).
-- Uses `_run_id`, `_run_meta`, `_tag`, `_schema_version` so each run is traceable.
-- Optional `_deleted` flag for soft-delete patterns.
-
-### 5. Dry-Run and Safe Testing
-
-- `MONGO_DRY_RUN` allows an entire pipeline run with:
-  - No writes to MongoDB.
-  - Logs showing what would have happened.
-- Useful for:
-  - New rule sets.
-  - New data sources.
-  - Training investigators on a non-production dataset.
-
-### 6. Sector-Agnostic, Policy-Aware
-
-- Architecture is sector-agnostic (can be used for multiple industries).
-- License and documentation assume:
-  - Sensitive domains.
-  - Legal and ethical obligations.
-  - Need for human review and independent verification.
-
----
-
-## Architecture
-
-A high-level processing flow:
-
-1. **Input & Ingestion**
-   - Read from one or more sources (CSV file, JSON export, API call).
-   - Normalize field names and types into the `Provider` dataclass.
-
-2. **Enrichment Layer**
-   - Optional HTTP/API enrichment (e.g., search engines, public databases).
-   - Additional metadata stored in `signals`.
-
-3. **Rule Evaluation / Scoring**
-   - Apply domain-specific rules and scoring functions.
-   - Populate “flags” or “risk” attributes for internal use.
-   - Designed so new rules can be added without re-architecting the system.
-
-4. **Serialization**
-   - Convert internal `Provider` objects into dictionaries:
-     - with or without PII redaction.
-     - ready for file export or DB persistence.
-
-5. **Persistence & Output**
-   - MongoDB storage with run metadata.
-   - JSON and/or CSV output for investigators and analysts.
-
-6. **Review & Feedback Loop**
-   - Investigators review flagged entities.
-   - Feedback can inform future rule tuning and schema adjustments.
-
----
-
-## Conceptual Model
-
-The toolkit is built around a few core concepts:
-
-- **Entity = Provider / Organization**  
-  A facility, business, or service provider that may affect public safety, finances, or access to services.
-
-- **Signals**  
-  Supporting data points that do not by themselves prove anything but help triage or prioritize review.
-
-- **Heuristics / Rules**  
-  Simple, explainable logic layers that turn combinations of signals into flags worthy of investigation.
-
-- **Investigative Output**  
-  Structured results used to:
-  - Support early-warning systems.
-  - Prioritize site visits or audits.
-  - Guide document requests or deeper investigative steps.
+### Multi-sector investigative applicability
+- Domain-agnostic core architecture
+- License prohibits abusive, discriminatory, or retaliatory use
 
 ---
 
 ## Data Model: Provider Records
 
-The core object is the `Provider` dataclass (simplified):
+A simplified `Provider` model:
 
 ```python
-from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
-
 @dataclass
 class Provider:
     id: str
@@ -186,483 +127,153 @@ class Provider:
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     signals: Dict[str, Any] = field(default_factory=dict)
-    # Additional fields can be added to match your domain:
-    # license_id: Optional[str] = None
-    # license_status: Optional[str] = None
-    # last_inspection_date: Optional[str] = None
-    # sector: Optional[str] = None
 
-Notes
-	•	ID: Must be unique per run (or across runs, depending on your design).
-	•	Address & Coordinates: Treated as sensitive; redacted when needed.
-	•	Signals Dict: Hold structured or semi-structured investigative hints.
+Fields commonly treated as sensitive:
+	•	Address
+	•	Phone
+	•	Email
+	•	Website
+	•	Coordinates
 
-Example signals:
-
-provider.signals.update({
-    "shared_address_count": 4,
-    "google_place_id": "ChIJxxxxxx",
-    "has_website": True,
-    "domain_age_years": 0.5,
-    "prior_enforcement_matches": 2,
-})
-
+These may be automatically redacted depending on configuration.
 
 ⸻
 
 Signals and Investigative Heuristics
 
-The signals map is intentionally flexible. Examples:
-	•	Address / Identity Signals
+Signals are structured analytic hints — not findings. Examples:
+
+Address & identity indicators
 	•	shared_address_count
 	•	shared_phone_count
-	•	known_maildrop_location (e.g., UPS Store, virtual office)
-	•	Online Presence Signals
+	•	known_maildrop_location
+
+Online presence indicators
 	•	has_website
 	•	website_content_thin
 	•	website_down_or_parked
-	•	History & Enforcement Signals
+
+Enforcement & history indicators
 	•	prior_enforcement_matches
-	•	prior_suspicious_filings
 	•	associated_entities_count
-	•	Sector-Specific Signals (examples)
-	•	Childcare: capacity_mismatch_with_space
-	•	Healthcare: billing_pattern_flag
-	•	Housing: frequent_evictions_flag
 
-Rules
+Sector-specific flags (examples)
 
-Rules may operate like:
+Childcare
+	•	capacity_mismatch_with_space
 
-def evaluate_provider(provider: Provider) -> None:
-    s = provider.signals
-    flags = []
+Healthcare
+	•	billing_pattern_flag
 
-    if s.get("shared_address_count", 0) >= 5:
-        flags.append("HIGH_SHARED_ADDRESS_COUNT")
+Housing
+	•	frequent_evictions_flag
 
-    if s.get("website_content_thin") and s.get("prior_enforcement_matches", 0) > 0:
-        flags.append("THIN_WEB_PRESENCE_WITH_PRIOR_ENFORCEMENT")
-
-    provider.signals["flags"] = flags
-
-These flags are not accusations, but cues for human investigators.
+Flags are used to prioritize human review — not to conclude wrongdoing.
 
 ⸻
 
 PII Handling & Redaction
 
-PII behavior is centralized in serialize_provider:
+This toolkit supports three standard export profiles:
 
-from dataclasses import asdict
-from typing import Any, Dict
+Profile	Intended Use	PII State
+Internal Investigative	Secure agency systems	Full data
+Inter-Agency Sharing	Controlled partners	Redacted
+Public Reporting	Transparency reports	Highly redacted
 
-def serialize_provider(provider: Provider, redact: bool) -> Dict[str, Any]:
-    """
-    Convert Provider to dict, optionally redacting PII-leaning fields for sharing.
-    """
-    data = asdict(provider)
-    if not redact:
-        return data
+PII redaction applies to:
+	•	address
+	•	phone
+	•	email
+	•	website
+	•	coordinates
+	•	place identifiers
 
-    # Core identity redactions
-    for key in ("address", "phone", "website", "primary_email", "latitude", "longitude"):
-        if key in data and data[key] is not None:
-            data[key] = f"[REDACTED_{key.upper()}]"
-
-    # Redact some signals that may expose IDs or precise contact info
-    signals = data.get("signals") or {}
-    if "google_place_id" in signals and signals["google_place_id"]:
-        signals["google_place_id"] = "[REDACTED_PLACE_ID]"
-    data["signals"] = signals
-
-    return data
-
-Recommended Profiles
-	•	Profile A – Internal Full Records
-	•	REDACT_PII=false
-	•	Used inside secure government / agency networks.
-	•	Backed by access logging and role-based permissions.
-	•	Profile B – Inter-Agency Redacted Sharing
-	•	REDACT_PII=true
-	•	Use when sharing outside your immediate investigative unit, or with external oversight groups, consultants, or auditors.
-	•	Profile C – Public Reporting
-	•	Re-run with REDACT_PII=true, plus:
-	•	Additional project-specific redactions.
-	•	Removal or aggregation of fields that could lead to re-identification.
+Redacted values are replaced with explicit placeholders.
 
 ⸻
 
 Installation
 
-Prerequisites
-	•	Python: 3.10+ recommended
-	•	MongoDB: Local or remote deployment (if you use persistence)
-	•	Git: To clone the repository
-	•	Optional: make, docker, or orchestration tools for advanced deployment
+Requirements:
+	•	Python 3.10+
+	•	Git
+	•	Optional: MongoDB for persistence
 
-Clone the Repository
-
-git clone https://github.com/<your-org-or-user>/<your-repo>.git
-cd <your-repo>
-
-Virtual Environment
+git clone https://github.com/<your-org>/<repo>.git
+cd <repo>
 
 python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 
-Install Dependencies
-
-pip install --upgrade pip
 pip install -r requirements.txt
-
-Typical requirements.txt entries include:
-	•	requests – HTTP integrations and enrichment
-	•	pymongo – MongoDB client
-	•	python-dotenv – environment variable loading (if you use .env)
-	•	pydantic or similar – if you later add schema validation layers
-
-⸻
-
-Configuration
-
-All configuration can be driven by environment variables, configuration files, or both.
-
-MongoDB
-	•	MONGO_URI
-e.g. mongodb://localhost:27017
-	•	MONGO_DB_NAME
-e.g. frauddet
-	•	MONGO_PROVIDERS_COLLECTION
-e.g. providers
-	•	MONGO_BATCH_SIZE
-e.g. 500
-	•	MONGO_WRITE_MODE
-	•	"insert"
-	•	"replace"
-	•	"upsert"
-	•	MONGO_SOFT_DELETE
-If set (e.g., true), ensures _deleted=False by default.
-	•	MONGO_TAG
-e.g. pilot-2026-01.
-	•	MONGO_SCHEMA_VERSION
-e.g. 1 or 2026.01.
-
-Run Metadata & Behavior
-	•	RUN_ID
-Unique identifier (UUID, timestamp, etc.).
-	•	REDACT_PII
-e.g. true or false.
-	•	MONGO_DRY_RUN
-true to disable database writes while logging actions.
-
-Enrichment & APIs
-
-If you integrate with external services, define additional env vars:
-	•	EXTERNAL_API_KEY
-	•	GOOGLE_PLACES_API_KEY
-	•	PROXY_URL (if needed)
-
-⸻
-
-Running the Pipeline
-
-The exact CLI will depend on your main script. A typical example:
-
-python frauddet.py \
-  --input data/providers_raw.json \
-  --input-format json \
-  --output-json data/providers_scored.json \
-  --output-csv data/providers_scored.csv \
-  --mongo-write
-
-Potential flags:
-	•	--input PATH
-	•	--input-format {csv,json}
-	•	--output-json PATH
-	•	--output-csv PATH
-	•	--redact-pii (override env)
-	•	--mongo-write or --no-mongo
-	•	--dry-run
-
-You can provide a --help:
-
-python frauddet.py --help
 
 
 ⸻
 
 MongoDB Persistence
 
-High-level write logic:
+Documents are persisted with:
+	•	_run_id
+	•	_run_meta
+	•	_schema_version
+	•	_tag
+	•	optional _deleted
 
-if MONGO_DRY_RUN:
-    logging.info("[Mongo dry-run] Would write %d provider documents.", len(providers))
-else:
-    logging.info(
-        "Writing %d providers to MongoDB (%s.%s) with mode=%s",
-        len(providers), MONGO_DB_NAME, MONGO_PROVIDERS_COLLECTION, MONGO_WRITE_MODE
-    )
+Every run is independently reconstructable.
 
-    for batch in _batched(providers, MONGO_BATCH_SIZE):
-        docs = []
-        for p in batch:
-            doc = serialize_provider(p, redact=REDACT_PII)
-            doc["_run_id"] = RUN_ID
-            doc["_run_meta"] = run_meta
-            doc["_tag"] = MONGO_TAG
-            doc["_schema_version"] = MONGO_SCHEMA_VERSION
-            if MONGO_SOFT_DELETE:
-                doc.setdefault("_deleted", False)
-            doc = _redact_provider_doc(doc)  # optional extra pass
-            docs.append(doc)
-
-        try:
-            if MONGO_WRITE_MODE == "insert":
-                providers_col.insert_many(docs, ordered=False)
-            elif MONGO_WRITE_MODE == "replace":
-                for doc in docs:
-                    providers_col.replace_one({"id": doc.get("id")}, doc, upsert=True)
-            else:  # upsert
-                for doc in docs:
-                    providers_col.update_one({"id": doc.get("id")}, {"$set": doc}, upsert=True)
-        except Exception as e:
-            _log_mongo_error("providers batch write", e)
-
-Important:
-	•	_run_id and _tag allow easy filtering/querying by run.
-	•	_schema_version helps you manage migrations and downstream joins.
-	•	_deleted allows soft deletes instead of destructive removal.
+This enables:
+	•	chain-of-custody style auditability
+	•	historical comparison
+	•	investigative repeatability
 
 ⸻
 
 JSON / CSV Output
 
-Example export:
+Exports are suitable for:
+	•	forensic review
+	•	dashboards
+	•	data science workflows
+	•	cross-agency reporting
 
-import json
-import csv
-
-rows = [serialize_provider(p, redact=REDACT_PII) for p in providers]
-
-# JSON
-with open("providers_scored.json", "w", encoding="utf-8") as f:
-    json.dump(rows, f, indent=2)
-
-# CSV (flatten as needed)
-fieldnames = sorted({k for row in rows for k in row.keys()})
-with open("providers_scored.csv", "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(rows)
-
-You may want a helper that flattens nested structures or the signals dict for CSV outputs.
-
-⸻
-
-Use Cases by Sector
-
-Childcare / Youth Services
-	•	Identify providers with:
-	•	High shared-address counts.
-	•	Ambiguous or non-existent web presence.
-	•	Unusual capacity vs. reported staffing.
-	•	Use output to:
-	•	Prioritize licensing visits.
-	•	Check for cross-linkages with closed or sanctioned providers.
-
-Healthcare / Behavioral Health
-	•	Screen:
-	•	Small clinics with unusual address patterns.
-	•	Telehealth entities with little observable infrastructure.
-	•	Entities with previous sanctions or license actions.
-	•	Focus:
-	•	Cross-referencing address/phone reuse.
-	•	Stability and legitimacy of location.
-
-Housing / Shelter / Transitional Facilities
-	•	Review:
-	•	Facilities overlapping addresses with prior code violations.
-	•	Entities associated with high complaint volumes.
-	•	Entities that appear across multiple funding programs with the same address.
-
-Education / Training Providers
-	•	Identify:
-	•	“Pop-up” academies with thin or misleading web presence.
-	•	Entities sharing contact infrastructure with past bad actors.
-	•	Entities marketing high-cost services to vulnerable populations.
+Redaction state is preserved in output metadata.
 
 ⸻
 
 Multi-Industry Use & Limitations
 
-The toolkit is intentionally generic, but it is licensed and documented as investigative support, not a final decision engine.
+This toolkit is screening software, not:
+	•	a legal adjudication system
+	•	a benefits-eligibility engine
+	•	a law enforcement determination tool
 
-Limitations:
-	•	Does not replace:
-	•	Case management systems.
-	•	Legal review.
-	•	Human investigative judgment.
-	•	Should not be used as:
-	•	A fully automated gatekeeper for benefits.
-	•	The sole basis for adverse actions in high-risk domains.
-
-Before using in any new domain:
-	1.	Perform a small pilot using known ground-truth cases.
-	2.	Document domain-specific rules, thresholds, and signals.
-	3.	Ensure you have legal/regulatory approval for the intended use.
+Outputs require:
+	•	contextual analysis
+	•	corroborating evidence
+	•	professional judgment
 
 ⸻
 
-Security, Ethics, and Responsible Use
+Security, Ethics & Responsible Use
 
-Security
-	•	Restrict access to:
-	•	Raw inputs containing PII.
-	•	MongoDB collections with unredacted records.
-	•	Enforce network controls and encryption in transit (TLS).
-	•	Use role-based access to limit who can:
-	•	Run the pipeline.
-	•	Access investigative outputs.
+Use is prohibited for:
+	•	harassment
+	•	retaliation
+	•	doxxing
+	•	discrimination
+	•	targeted harassment campaigns
 
-Ethics
-	•	Avoid harassment, doxxing, and targeted campaigns.
-	•	Treat outputs as hypotheses, not conclusions.
-	•	Use context and additional evidence before taking any action.
+Users must comply with:
+	•	privacy + data protection law
+	•	records handling requirements
+	•	fair-process & due-process standards
 
-Compliance
-	•	Align with:
-	•	Privacy and data protection laws.
-	•	Sector-specific regulations (e.g., healthcare, education).
-	•	Fair-lending, fair-housing, and anti-discrimination laws.
-
-⸻
-
-Operational Playbooks
-
-Example: Pilot Run in a Childcare Licensing Unit
-	1.	Export all active licensed providers to CSV.
-	2.	Ingest via frauddet as Providers.
-	3.	Enrich with online presence checks (optional).
-	4.	Run investigative scoring rules.
-	5.	Store results in MongoDB and JSON.
-	6.	Investigators review top-N flagged entities.
-	7.	Document findings:
-	•	False positives.
-	•	True positives.
-	•	Rule tuning ideas.
-
-Example: Ongoing Monitoring
-	1.	Schedule nightly or weekly runs.
-	2.	Tag each run with _tag (e.g., weekly-monitoring).
-	3.	Keep historical data by _run_id.
-	4.	Compare changes in signals across runs:
-	•	New shared addresses.
-	•	New signals from enforcement data.
-
-⸻
-
-Logging, Observability, and Audit Trails
-	•	Use Python’s logging module:
-	•	Log ingest counts.
-	•	Log rule evaluations (at least in aggregate).
-	•	Log write outcomes and MongoDB errors.
-	•	Recommended:
-	•	Central log aggregation (e.g., ELK stack, CloudWatch, etc.).
-	•	Retention policies that align with your record-keeping regulations.
-	•	For audits:
-	•	Use _run_id and _tag to reconstruct which data and rules were in effect.
-	•	Keep a record of rule configurations and code version (e.g., Git commit hash).
-
-⸻
-
-Deployment Modes
-
-1. Analyst Laptop / Single-User Environment
-	•	Small data volumes.
-	•	Local MongoDB or file-based outputs.
-	•	Good for pilots and early development.
-
-2. Small Server / Agency VM
-	•	Shared by a small investigative team.
-	•	Regular scheduled runs.
-	•	MongoDB on a secure internal network.
-
-3. Containerized / Orchestrated
-	•	Package frauddet into a Docker image.
-	•	Run on Kubernetes or similar.
-	•	Integrate with workflow tools (Airflow, Prefect, etc.).
-
-In all modes, ensure:
-	•	Controlled access to environment variables and secrets.
-	•	Proper TLS and firewall rules.
-
-⸻
-
-Development Notes
-
-Suggested Repo Layout (Example)
-	•	frauddet.py – main pipeline / CLI entrypoint
-	•	models.py – dataclasses like Provider
-	•	rules/ – rule sets and heuristics
-	•	enrichers/ – external API or scraping logic
-	•	io/ – ingestion and export utilities
-	•	tests/ – unit and integration tests
-	•	LICENSE – custom license text
-	•	README.md – this file
-
-Testing
-
-pytest
-# or
-python -m unittest
-
-Create fixtures with:
-	•	Synthetic providers.
-	•	Known signal configurations.
-	•	Expected flags.
-
-Code Style
-
-pip install black isort
-black .
-isort .
-
-
-⸻
-
-Versioning and Schema Evolution
-	•	Use _schema_version in each MongoDB document.
-	•	Track:
-	•	What each version means.
-	•	What fields were added, removed, or changed.
-
-When you change the schema:
-	1.	Bump _schema_version.
-	2.	Document changes in a CHANGELOG.md.
-	3.	Optionally write migration scripts for historical data.
-
-⸻
-
-FAQ
-
-Q: Is this open-source?
-A: No. It is source-available under a custom license that restricts use to .gov entities and controlled commercial cases with royalties.
-
-Q: Can I use this in my startup product?
-A: Only if you comply with the license. By default, commercial use requires:
-	•	2% of Gross Revenue on products/services that incorporate or rely on the Software.
-	•	Monthly reporting and payment.
-	•	Written contact with the Author to set up payment logistics.
-
-Q: Can I change the rules and scoring?
-A: Yes, the rules are intended to be customizable. But any modifications remain subject to the same license, and you retain full responsibility for those modifications and their consequences.
-
-Q: Does this make legal conclusions or prove fraud?
-A: No. It provides screening and analytic signals only. Human investigators must independently verify facts and consult counsel where appropriate.
-
-Q: Can I relicense this as MIT/GPL/Apache?
-A: No. The license explicitly forbids re-releasing under another license or representing it as standard open-source.
+This toolkit is explicitly designed to support:
+	•	investigative due diligence
+	•	consumer protection
+	•	regulatory accountability
+	•	public integrity workflows
 
 ⸻
 
@@ -671,35 +282,75 @@ License
 This project is licensed under:
 
 Leonard Governmental Investigative Software License v1.0
-SPDX-License-Identifier: LicenseRef-Leonard-Gov-Investigative-1.0
+SPDX-Identifier:
 
-Key aspects (summary only — the full LICENSE controls):
-	•	Default use limited to .gov and specific public-sector use cases.
-	•	Commercial and bundled uses require:
-	•	Compliance with default 2% Gross Revenue royalty or a separate written agreement.
-	•	Strong prohibitions on:
-	•	Harassment, doxxing, unlawful discrimination, and unauthorized surveillance.
-	•	Strict limitations of liability and “AS IS” warranty disclaimers.
-	•	User indemnification for misuse, legal violations, or integration errors.
+LicenseRef-Leonard-Gov-Investigative-1.0
 
-Read the LICENSE￼ file in full before using this Software.
+Key terms include:
+	•	Default use restricted to .gov entities
+	•	Commercial & bundled use requires:
+	•	prior written approval
+	•	2% gross-revenue royalty
+	•	monthly reporting obligations
+	•	Strict misuse prohibitions
+	•	Strong limitation-of-liability
+	•	User indemnification requirements
+
+The full license text is provided in LICENSE.
 
 ⸻
 
 Contact
 
 For:
-	•	Commercial licensing
-	•	Public-interest / academic usage approvals
-	•	Security disclosures
-	•	Questions about how the license applies to a specific scenario
+	•	.gov deployment support
+	•	commercial licensing inquiries
+	•	public-interest usage requests
+	•	security disclosures
 
-contact:
+Contact:
 
 Garrett Leonard
-brockleonard.ml@gmail.com
-www.linkedin.com/brockleonard
+Email: brockleonard.ml@gmail.com
+LinkedIn: https://www.linkedin.com/in/brockleonard
 
-If you fork or adapt this repository, you must preserve the license, attributions, and core restrictions, and you may not present this project as standard open-source or remove the requirement for permission and royalties in commercial deployments.
+If you fork or adapt this project, you must preserve:
+	•	copyright attribution
+	•	license restrictions
+	•	royalty conditions
+	•	.gov usage limitation
 
-If you tell me your repository name, one or two concrete sectors you want called out (e.g., “WA childcare licensing”), and your preferred contact email or URL, I can wire those into the README text so you can commit it without editing.
+---
+
+## Next steps I recommend
+
+If you're posting to GitHub:
+
+1) Make sure the file name is exactly:
+
+README.md
+
+2) Place your custom license text in:
+
+LICENSE
+
+(with SPDX header at top)
+
+3) Commit and push:
+
+```bash
+git add README.md LICENSE
+git commit -m "Add project README and license"
+git push
+
+
+⸻
+
+If you want, I can also:
+	•	generate a CONTRIBUTING.md
+	•	add SECURITY.md for disclosures
+	•	create issue templates
+	•	prepare a GitHub project description blurb
+	•	generate .github policy files
+
+Just tell me 👍
